@@ -14,7 +14,6 @@ class ResidualBlock(nn.Module):
             out_channels, out_channels, kernel_size=3, stride=1, padding=1
         )
         self.bn2 = nn.BatchNorm2d(num_features=out_channels)
-        # self.dropout = nn.Dropout(p=0.2)
 
         # Skip connections (Identity mapping)
         self.skip = nn.Sequential()
@@ -28,7 +27,6 @@ class ResidualBlock(nn.Module):
         identity = self.skip(x)
         x = F.relu(self.bn1(self.conv1(x)))
         x = self.bn2(self.conv2(x))
-        # x = self.dropout(x)
         x += identity
         return F.relu(x)
 
@@ -46,8 +44,6 @@ class CustomResnet(nn.Module):
         self.pool = nn.AdaptiveAvgPool2d(output_size=(1, 1))
         self.fc = nn.Linear(512, num_classes)
 
-        # self.dropout = nn.Dropout(p=0.3)
-
     def _make_layer(self, in_channels, out_channels, num_blocks, stride):
         layers = [ResidualBlock(in_channels, out_channels, stride)]
         for _ in range(1, num_blocks):
@@ -62,5 +58,4 @@ class CustomResnet(nn.Module):
         x = self.layer4(x)
         x = self.pool(x)
         x = torch.flatten(x, 1)
-        # x = self.dropout(x)
         return self.fc(x)
